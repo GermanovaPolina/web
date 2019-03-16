@@ -56,7 +56,7 @@ class UserModel:
 
     def update(self, user_name, user_id):
         cursor = self.connection.cursor()
-        cursor.execute('''UPDATE users SET username = '{}' WHERE id = {}'''.format(user_name, str(user_id)))
+        cursor.execute('''UPDATE users SET user_name = '{}' WHERE id = {}'''.format(user_name, str(user_id)))
         cursor.close()
         self.connection.commit()
 
@@ -80,11 +80,8 @@ class NewsModel:
                              hashtag VARCHAR(100),
                              content VARCHAR(1000),
                              date VARCHAR(1000),
-                             user_id INTEGER,
-                             edited INTEGER
+                             user_id INTEGER
                              )''')
-        cursor.execute('''ALTER TABLE news
-                            DEFAULT 0 FOR EDITED''')
         cursor.close()
         self.connection.commit()
 
@@ -126,7 +123,6 @@ class NewsModel:
             cursor.execute('''UPDATE news SET content = '{}' WHERE id = {}'''.format(content, str(news_id)))
         if hashtag:
             cursor.execute('''UPDATE news SET content = '{}' WHERE id = {}'''.format(hashtag, str(news_id)))
-        cursor.execute('UPDATE news SET edited = 1 WHERE id = {}')
         cursor.close()
         self.connection.commit()
 
