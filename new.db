@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS users 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                             user_name VARCHAR(50),
+                             password_hash VARCHAR(128)
+                             )
+
+
+CREATE TABLE IF NOT EXISTS news 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             community INTEGER, 
+                             title VARCHAR(100),
+                             hashtag VARCHAR(100),
+                             content VARCHAR(1000),
+                             date VARCHAR(1000),
+                             user_id INTEGER,
+                             edited INTEGER
+                             )
+
+
+
+CREATE TABLE IF NOT EXISTS communities 
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             title VARCHAR(100),
+                             bio VARCHAR(1000),
+                             admin INTEGER,
+                             )
