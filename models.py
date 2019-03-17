@@ -113,8 +113,8 @@ class NewsModel:
     def insert(self, community, title, hashtag, content, date, user_id):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO news 
-                          (commmunity, title, hashtag, content, date, user_id) 
-                          VALUES (?,?,?,?,?,?)''', (community, title, content, date, str(user_id)))
+                          (community, title, hashtag, content, date, user_id) 
+                          VALUES (?,?,?,?,?,?)''', (community, title, hashtag, content, date, str(user_id)))
         cursor.close()
         self.connection.commit()
 

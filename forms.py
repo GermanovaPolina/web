@@ -27,3 +27,9 @@ class EditComForm(FlaskForm):
     title = StringField('New Community Name')
     bio = TextAreaField('New Bio')
     submit = SubmitField('Change Community')
+
+class AddNewsForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    hashtag = StringField('Hashtag', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Post')

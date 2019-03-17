@@ -1,6 +1,7 @@
-from flask import Flask, render_template, session, redirect
-from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm
+from flask import Flask, render_template, session, redirect, make_response
+from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm, AddNewsForm
 from models import DB, UserModel, NewsModel, CommunityModel
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -60,7 +61,8 @@ def profile(user_name):
         return redirect('/login')
     user_id = session['user_id']
     user = user_model.get_name(user_name)[0]
-    news = NewsModel(db.get_connection()).get_all(user)
+    news = [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5], user_name)
+            for tuply in NewsModel(db.get_connection()).get_all(user)][::-1]
     comm = UserModel(db.get_connection()).get(user)[3].split()
     communities = [community_model.get(int(i))[1] for i in comm]
     return render_template('profile.html', user_name=user_name, news=news, communities=communities)
@@ -89,7 +91,9 @@ def community(community_name):
         return redirect('/login')
     user_name = session['username']
     community = CommunityModel(db.get_connection()).get_name(community_name)
-    news = NewsModel(db.get_connection()).get_all(None, community[0])
+    news = [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4],
+             tuply[5], user_model.get(tuply[6])[1]) for tuply in
+            NewsModel(db.get_connection()).get_all(None, community[0])][::-1]
     admin = int(community[3].split()[0])
     users = [user_model.get(int(i))[1] for i in community[3].split()]
     bio = community[2]
@@ -97,7 +101,6 @@ def community(community_name):
         followed = True
     else:
         followed = False
-    print(followed)
     return render_template('community.html', community_name=community_name, bio=bio, user_name=user_name, news=news, users=users, admin=admin, followed=followed)
 
 @app.route('/create', methods=['GET', 'POST'])
@@ -118,6 +121,8 @@ def create():
 
 @app.route('/follow/<community_name>')
 def follow(community_name):
+    if 'username' not in session:
+        return redirect('/login')
     user_id = session['user_id']
     com_id = community_model.get_name(community_name)[0]
     users = community_model.get_name(community_name)[3].split()
@@ -149,6 +154,8 @@ def edit_com(community_name):
 
 @app.route('/unfollow/<community_name>')
 def unfollow(community_name):
+    if 'username' not in session:
+        return redirect('/login')
     user_id = session['user_id']
     com_id = community_model.get_name(community_name)[0]
     users = community_model.get_name(community_name)[3].split()
@@ -157,6 +164,45 @@ def unfollow(community_name):
         community_model.unfollow(user_id, com_id)
     return redirect(('/community/{}').format(community_name))
 
+@app.route('/community/<community_name>/add_news', methods=['GET', 'POST'])
+def add_news(community_name):
+    if 'username' not in session:
+        return redirect('/login')
+    if str(session['user_id']) in community_model.get_name(community_name)[3].split():
+        form = AddNewsForm()
+        community_id = community_model.get_name(community_name)[0]
+        title = form.title.data
+        hashtag = form.hashtag.data
+        content = form.content.data
+        date = ':'.join(str(datetime.now()).split(':')[:2])
+        if not(title is None or hashtag is None or content is None):
+            news_model.insert(community_id, title, hashtag, content, date, session['user_id'])
+        else:
+            return render_template('add_news.html', form=form, community_name=community_name)
+    return redirect(('/community/{}').format(community_name))
+
+@app.route('/delete_news/<int:news_id>')
+def deleting(news_id):
+    if news_id in [i[0] for i in news_model.get_all()]:
+        news_model.delete(news_id)
+    return redirect(('/profile/{}').format(session['username']))
+
+@app.route('/news_feed')
+def feed():
+    if 'username' not in session:
+        return redirect('/login')
+    communities = user_model.get(session['user_id'])[3].split()
+    news = []
+    for com in communities:
+        news += [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5],
+                  user_model.get(tuply[6])[1]) for tuply in news_model.get_all(None, int(com))]
+    print(news)
+    news = sorted(news, key=lambda x: x[5], reverse=True)
+    return render_template('feed.html', news=news)
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 if __name__ == '__main__':

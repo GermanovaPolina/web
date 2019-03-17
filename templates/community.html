@@ -5,10 +5,10 @@
     <h5>{{ bio }}</h5>
     {% if session['user_id'] == admin %}
         <a href="/community/{{ community_name }}/edit">Edit Community</a>
-        <a href="/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
+        <a href="/community/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
     {% elif followed and not session['username'] == admin %}
         <a href="/unfollow/{{ community_name }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Unfollow</a>
-        <a href="/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
+        <a href="/community/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
     {% elif not session['username'] == admin %}
         <a href="/follow/{{ community_name }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Follow</a>
     {% endif %}
@@ -16,11 +16,12 @@
     {% for item in news %}
     <div class="alert alert-dark" role="alert">
         <h3>{{ item[1] }}</h3>
-        <h2>{{ item[2] }}</h2>
         <h3>{{ item[3] }}</h3>
+        <h6>{{ item[2] }}</h6>
         <div>{{ item[4] }}</div>
         <div>{{ item[5] }}</div>
-        {% if user_name == session['username'] %}
+        <h5><a href="/profile/{{ item[6] }}">{{ item[6] }}</a></h5>
+        {% if item[6] == session['username'] %}
             <a href="/delete_news/{{item[0]}}">Delete news</a>
         {% endif %}
     </div>

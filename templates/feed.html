@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+ 
+{% block content %}
+<h2>News Feed</h2>
+{% for item in news %}
+    <div class="alert alert-dark" role="alert">
+        <h3><a href="/community/{{ item[1] }}">{{ item[1] }}</a></h3>
+        <h3>{{ item[3] }}</h3>
+        <h6>{{ item[2] }}</h6>
+        <div>{{ item[4] }}</div>
+        <div>{{ item[5] }}</div>
+        <h5><a href="/profile/{{ item[6] }}">{{ item[6] }}</a></h5>
+        {% if item[6] == session['username'] %}
+            <a href="/delete_news/{{item[0]}}">Delete news</a>
+        {% endif %}
+    </div>
+{% endfor %}
+{% endblock %}
