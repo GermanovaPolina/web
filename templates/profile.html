@@ -3,8 +3,9 @@
 {% block content %}
     <h1>{{ user_name }}</h1>
     {% if user_name == session['username'] %}
-        <h5><a href="/edit/{{ user_name }}">Edit Profile</a></h5>
+        <h5><a href="/profile/{{ user_name }}/edit">Edit Profile</a></h5>
     {% endif %}
+    <h4>{{ user_name }}'s news</h4>
     {% for item in news %}
     <div class="alert alert-dark" role="alert">
         <h3>{{item[1]}}</h3>
@@ -17,9 +18,13 @@
         {% endif %}
     </div>
     {% endfor %}
+    <h4>{{ user_name }}'s communities</h4>
     <div class="list-group">
     {% for item in communities %}
         <a href="/community/{{ item }}" class="list-group-item list-group-item-action">{{ item }}</a>
     {% endfor %}
     </div>
+    {% if user_name == session['username'] %}
+        <a href="/logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Log Out</a>
+    {% endif %}
 {% endblock %}

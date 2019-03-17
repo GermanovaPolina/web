@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+ 
+{% block content %}
+    <h1>{{ community_name }}</h1>
+    <h5>{{ bio }}</h5>
+    {% if session['user_id'] == admin %}
+        <a href="/community/{{ community_name }}/edit">Edit Community</a>
+        <a href="/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
+    {% elif followed and not session['username'] == admin %}
+        <a href="/unfollow/{{ community_name }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Unfollow</a>
+        <a href="/{{ community_name }}/add_news" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Add news</a>
+    {% elif not session['username'] == admin %}
+        <a href="/follow/{{ community_name }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Follow</a>
+    {% endif %}
+    <h4>{{ community_name }}'s news</h4>
+    {% for item in news %}
+    <div class="alert alert-dark" role="alert">
+        <h3>{{ item[1] }}</h3>
+        <h2>{{ item[2] }}</h2>
+        <h3>{{ item[3] }}</h3>
+        <div>{{ item[4] }}</div>
+        <div>{{ item[5] }}</div>
+        {% if user_name == session['username'] %}
+            <a href="/delete_news/{{item[0]}}">Delete news</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <h4>{{ community_name }}'s members</h4>
+    <div class="list-group">
+    {% for item in users %}
+        {% if item == users[0] %}
+            <a href="/profile/{{ item }}" class="list-group-item list-group-item-action active">{{ item }}</a>
+        {% else %}
+            <a href="/profile/{{ item }}" class="list-group-item list-group-item-action">{{ item }}</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}

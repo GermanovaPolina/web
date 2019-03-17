@@ -41,6 +41,12 @@ class UserModel:
         row = cursor.fetchone()
         return row
 
+    def get_name(self, user_name):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM users WHERE user_name = ?", (str(user_name), ))
+        row = cursor.fetchone()
+        return row
+
     def get_all(self):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM users")
@@ -64,8 +70,8 @@ class UserModel:
     def unfollow(self, user_id, community_id):
         cursor = self.connection.cursor()
         communities = self.get(user_id)[3].split()
-        if community_id in communities:
-            communities.remove(community_id)
+        if str(community_id) in communities:
+            communities.remove(str(community_id))
             cursor.execute('''UPDATE users SET communities = '{}' WHERE id = {}'''.format(' '.join(communities), str(user_id)))
         cursor.close()
         self.connection.commit()
@@ -73,8 +79,8 @@ class UserModel:
     def follow(self, user_id, community_id):
         cursor = self.connection.cursor()
         communities = self.get(user_id)[3].split()
-        if not community_id in communities:
-            communities.append(community_id)
+        if not str(community_id) in communities:
+            communities.append(str(community_id))
             cursor.execute('''UPDATE users SET communities = '{}' WHERE id = {}'''.format(' '.join(communities), str(user_id)))
         cursor.close()
         self.connection.commit()
@@ -159,7 +165,7 @@ class CommunityModel:
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              title VARCHAR(100),
                              bio VARCHAR(1000),
-                             users_id VARCHAR(10000)
+                             users VARCHAR(10000)
                              )''')
         cursor.close()
         self.connection.commit()
@@ -168,13 +174,19 @@ class CommunityModel:
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO communities 
                           (title, bio, users) 
-                          VALUES (?,?,?)''', (tite, bio, str(user_id) + ' '))
+                          VALUES (?,?,?)''', (title, bio, str(user_id) + ' '))
         cursor.close()
         self.connection.commit()
 
     def get(self, community_id):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM communities WHERE id = ?", (str(community_id), ))
+        row = cursor.fetchone()
+        return row
+
+    def get_name(self, community_name):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM communities WHERE title = ?", (str(community_name), ))
         row = cursor.fetchone()
         return row
 
@@ -189,25 +201,25 @@ class CommunityModel:
         if title:
             cursor.execute('''UPDATE communities SET title = '{}' WHERE id = {}'''.format(title, str(community_id)))
         if bio:
-            cursor.execute('''UPDATE communities SET bio = '{}' WHERE id = {}'''.format(content, str(community_id)))
+            cursor.execute('''UPDATE communities SET bio = '{}' WHERE id = {}'''.format(bio, str(community_id)))
         cursor.close()
         self.connection.commit()
 
     def unfollow(self, user_id, community_id):
         cursor = self.connection.cursor()
         users = self.get(community_id)[3].split()
-        if user_id in users:
-            users.remove(user_id)
-            cursor.execute('''UPDATE communities SET users_id = '{}' WHERE id = {}'''.format(' '.join(users), str(community_id)))
+        if str(user_id) in users:
+            users.remove(str(user_id))
+            cursor.execute('''UPDATE communities SET users = '{}' WHERE id = {}'''.format(' '.join(users), str(community_id)))
         cursor.close()
         self.connection.commit()
 
     def follow(self, user_id, community_id):
         cursor = self.connection.cursor()
         users = self.get(community_id)[3].split()
-        if user_id not in users:
-            users.append(user_id)
-            cursor.execute('''UPDATE communities SET users_id = '{}' WHERE id = {}'''.format(' '.join(users), str(community_id)))
+        if str(user_id) not in users:
+            users.append(str(user_id))
+            cursor.execute('''UPDATE communities SET users = '{}' WHERE id = {}'''.format(' '.join(users), str(community_id)))
         cursor.close()
         self.connection.commit()
 

@@ -21,8 +21,9 @@
     <div class="navbar-nav">
         {% if "username" in session %}
         <a class="nav-item nav-link active" href="#">News Feed <span class="sr-only"></span></a>
-      <a class="nav-item nav-link" href="#">My Communities</a>
       <a class="nav-item nav-link" href="/profile/{{ session['username'] }}">My Profile</a>
+        <a class="nav-item nav-link" href="/create">Create Community</a>
+        <a class="nav-item nav-link" href="/logout">Log Out</a>
       {% endif %}
     </div>
   </div>
