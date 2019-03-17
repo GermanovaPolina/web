@@ -13,8 +13,13 @@
         <div>{{ item[4]}}</div>
         <div>{{ item[5]}}</div>
         {% if user_name == session['username'] %}
-            <a href="/delete_news/{{item[0]}}">Удалить новость</a>
+            <a href="/delete_news/{{item[0]}}">Delete news</a>
         {% endif %}
     </div>
     {% endfor %}
+    <div class="list-group">
+    {% for item in communities %}
+        <a href="/community/{{ item }}" class="list-group-item list-group-item-action">{{ item }}</a>
+    {% endfor %}
+    </div>
 {% endblock %}

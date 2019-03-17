@@ -10,12 +10,12 @@ user_model = UserModel(db.get_connection())
 user_model.init_table()
 news_model = NewsModel(db.get_connection())
 news_model.init_table()
+community_model = CommunityModel(db.get_connection())
+community_model.init_table()
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'username' not in session:
-        return redirect('/login')
     form = LoginForm()
     user_name = form.username.data
     password = form.password.data
@@ -62,7 +62,9 @@ def profile(user_name):
         return redirect('/login')
     user_id = session['user_id']
     news = NewsModel(db.get_connection()).get_all(user_id)
-    return render_template('profile.html', user_name=session['username'], news=news)
+    comm = UserModel(db.get_connection()).get(user_id)[3]
+    communities = [UserModel(db.get_connection()).get(i) for i in comm]
+    return render_template('profile.html', user_name=user_name, news=news, communities=communities)
 
 @app.route('/edit/<user_name>', methods=['GET', 'POST'])
 def edit(user_name):
@@ -73,7 +75,6 @@ def edit(user_name):
         return redirect('/profile/<user_name>')
     user_model = UserModel(db.get_connection())
     new_name = form.username.data
-    print([tuply[1] for tuply in user_model.get_all()])
     if not new_name in [tuply[1] for tuply in user_model.get_all()]:
         user_model.update(new_name, session['user_id'])
         session['username'] = new_name
