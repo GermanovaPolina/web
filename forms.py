@@ -6,7 +6,6 @@ from wtforms.validators import DataRequired
 class LoginForm(FlaskForm):
     username = StringField('Login', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember me')
     submit = SubmitField('Sign in')
 
 class RegForm(FlaskForm):
@@ -33,3 +32,9 @@ class AddNewsForm(FlaskForm):
     hashtag = StringField('Hashtag', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
+
+class EditNewsForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    hashtag = StringField('Hashtag', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Change')

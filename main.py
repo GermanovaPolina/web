@@ -1,5 +1,5 @@
-from flask import Flask, render_template, session, redirect, make_response
-from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm, AddNewsForm
+from flask import Flask, render_template, session, redirect, make_response, jsonify
+from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm, AddNewsForm, EditNewsForm
 from models import DB, UserModel, NewsModel, CommunityModel
 from datetime import datetime
 
@@ -27,8 +27,7 @@ def login():
     if (exists[0]):
         session['username'] = user_name
         session['user_id'] = exists[1]
-        #return redirect("/news_feed")
-        return redirect(("/profile/{}").format(user_name))
+        return redirect("/news_feed")
     elif not(user_name is None) and not(password is None):
         existence = 'Wrong username or password'
     return render_template('login.html', form=form, existence=existence)
@@ -196,9 +195,25 @@ def feed():
     for com in communities:
         news += [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5],
                   user_model.get(tuply[6])[1]) for tuply in news_model.get_all(None, int(com))]
-    print(news)
     news = sorted(news, key=lambda x: x[5], reverse=True)
     return render_template('feed.html', news=news)
+
+@app.route('/edit_news/<int:news_id>', methods=['GET', 'POST'])
+def updating(news_id):
+    if 'username' not in session:
+        return redirect('/login')
+    form = EditNewsForm()
+    news = news_model.get(news_id)
+    if session['user_id'] != news[6]:
+        return redirect(('/profile/{}').format(session['username']))
+    title = form.title.data
+    hashtag = form.hashtag.data
+    content = form.content.data
+    if not(title is None and hashtag is None and content is None):
+        news_model.update(news_id, title, hashtag, content)
+        return redirect(('/profile/{}').format(session['username']))
+    return render_template('editnews.html', form=form, user_name=session['username'])
+
 
 @app.errorhandler(404)
 def not_found(error):
