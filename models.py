@@ -104,17 +104,18 @@ class NewsModel:
                              title VARCHAR(100),
                              hashtag VARCHAR(100),
                              content VARCHAR(1000),
+                             image VARCHAR(100),
                              date VARCHAR(1000),
                              user_id INTEGER
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, community, title, hashtag, content, date, user_id):
+    def insert(self, community, title, hashtag, content, image, date, user_id):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO news 
-                          (community, title, hashtag, content, date, user_id) 
-                          VALUES (?,?,?,?,?,?)''', (community, title, hashtag, content, date, str(user_id)))
+                          (community, title, hashtag, content, image, date, user_id) 
+                          VALUES (?,?,?,?,?,?,?)''', (community, title, hashtag, content, image, date, str(user_id)))
         cursor.close()
         self.connection.commit()
 

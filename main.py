@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, redirect, make_response, json
 from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm, AddNewsForm, EditNewsForm
 from models import DB, UserModel, NewsModel, CommunityModel
 from datetime import datetime
+import os
 
 
 app = Flask(__name__)
@@ -60,7 +61,7 @@ def profile(user_name):
         return redirect('/login')
     user_id = session['user_id']
     user = user_model.get_name(user_name)[0]
-    news = [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5], user_name)
+    news = [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5], tuply[6], user_name)
             for tuply in NewsModel(db.get_connection()).get_all(user)][::-1]
     comm = UserModel(db.get_connection()).get(user)[3].split()
     communities = [community_model.get(int(i))[1] for i in comm]
@@ -90,8 +91,8 @@ def community(community_name):
         return redirect('/login')
     user_name = session['username']
     community = CommunityModel(db.get_connection()).get_name(community_name)
-    news = [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4],
-             tuply[5], user_model.get(tuply[6])[1]) for tuply in
+    news = [[tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5],
+             tuply[6], user_model.get(tuply[7])[1]] for tuply in
             NewsModel(db.get_connection()).get_all(None, community[0])][::-1]
     admin = int(community[3].split()[0])
     users = [user_model.get(int(i))[1] for i in community[3].split()]
@@ -172,10 +173,20 @@ def add_news(community_name):
         community_id = community_model.get_name(community_name)[0]
         title = form.title.data
         hashtag = form.hashtag.data
+        image = form.image.data
         content = form.content.data
         date = ':'.join(str(datetime.now()).split(':')[:2])
+        existence = ''
         if not(title is None or hashtag is None or content is None):
-            news_model.insert(community_id, title, hashtag, content, date, session['user_id'])
+            name = ''
+            if image != '':
+                if image.filename.split('.')[-1] not in ['jpg', 'jpeg', 'png']:
+                    existence = 'Not image type'
+                    return render_template('add_news.html', form=form, community_name=community_name, existence=existence)
+                name = '/static/img/' + image.filename
+                print(name)
+                image.save('static\img\\' + image.filename)
+            news_model.insert(community_id, title, hashtag, content, name, date, session['user_id'])
         else:
             return render_template('add_news.html', form=form, community_name=community_name)
     return redirect(('/community/{}').format(community_name))
@@ -183,6 +194,9 @@ def add_news(community_name):
 @app.route('/delete_news/<int:news_id>')
 def deleting(news_id):
     if news_id in [i[0] for i in news_model.get_all()]:
+        image = news_model.get(news_id)[5]
+        if image != '':
+            os.remove('\\'.join(image.split('/')[1::]))
         news_model.delete(news_id)
     return redirect(('/profile/{}').format(session['username']))
 
@@ -193,8 +207,8 @@ def feed():
     communities = user_model.get(session['user_id'])[3].split()
     news = []
     for com in communities:
-        news += [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5],
-                  user_model.get(tuply[6])[1]) for tuply in news_model.get_all(None, int(com))]
+        news += [(tuply[0], community_model.get(tuply[1])[1], tuply[2], tuply[3], tuply[4], tuply[5], tuply[6],
+                  user_model.get(tuply[7])[1]) for tuply in news_model.get_all(None, int(com))]
     news = sorted(news, key=lambda x: x[5], reverse=True)
     return render_template('feed.html', news=news)
 
@@ -204,11 +218,12 @@ def updating(news_id):
         return redirect('/login')
     form = EditNewsForm()
     news = news_model.get(news_id)
-    if session['user_id'] != news[6]:
+    if session['user_id'] != news[7]:
         return redirect(('/profile/{}').format(session['username']))
     title = form.title.data
     hashtag = form.hashtag.data
     content = form.content.data
+    print(title, hashtag, content, 'owo')
     if not(title is None and hashtag is None and content is None):
         news_model.update(news_id, title, hashtag, content)
         return redirect(('/profile/{}').format(session['username']))

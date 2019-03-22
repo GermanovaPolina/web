@@ -8,9 +8,10 @@
         <div class="badge badge-primary text-wrap"><h5>{{ item[3] }}</h5></div>
         <h6>{{ item[2] }}</h6>
         <div>{{ item[4] }}</div>
-        <div>{{ item[5] }}</div>
-        <h5><a href="/profile/{{ item[6] }}">{{ item[6] }}</a></h5>
-        {% if item[6] == session['username'] %}
+        <img src="{{ item[5] }}"  width="50%" height="50%" alt="">
+        <div>{{ item[6] }}</div>
+        <h5><a href="/profile/{{ item[7] }}">{{ item[7] }}</a></h5>
+        {% if item[7] == session['username'] %}
             <a href="/delete_news/{{item[0]}}">Delete news</a>
             <a href="/edit_news/{{item[0]}}">Edit news</a>
         {% endif %}

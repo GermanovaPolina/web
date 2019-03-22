@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{{ community_name }}</h1>
     <h3>Add news</h3>
-    <form action="" method="post" novalidate>
+    <form action="" method="post" novalidate enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <p>
             {{ form.title.label }}<br>
@@ -27,6 +27,16 @@
             {{ form.content.label }}<br>
             {{ form.content }}<br>
             {% for error in form.content.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.image.label }}
+            {{ form.image }}
+            {{ existence }}
+            {% for error in form.image.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, FileField
 from wtforms.validators import DataRequired
+import os
 
 
 class LoginForm(FlaskForm):
@@ -29,9 +30,11 @@ class EditComForm(FlaskForm):
 
 class AddNewsForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    hashtag = StringField('Hashtag', validators=[DataRequired()])
+    hashtag = StringField('Hashtag')
     content = TextAreaField('Content', validators=[DataRequired()])
+    image = FileField('Image')
     submit = SubmitField('Post')
+    FileField()
 
 class EditNewsForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])

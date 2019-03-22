@@ -16,15 +16,16 @@
     {% for item in news %}
     <div class="alert alert-dark" role="alert">
         <h3>{{ item[1] }}</h3>
-        <h3>{{ item[3] }}</h3>
+        <div class="badge badge-primary text-wrap"><h5>{{ item[3] }}</h5></div>
         <h6>{{ item[2] }}</h6>
         <div>{{ item[4] }}</div>
-        <div>{{ item[5] }}</div>
-        <h5><a href="/profile/{{ item[6] }}">{{ item[6] }}</a></h5>
-        {% if item[6] == session['username'] or session['user_id'] == admin %}
+        <img src="{{ item[5] }}"  width="50%" height="50%" alt="">
+        <div>{{ item[6] }}</div>
+        <h5><a href="/profile/{{ item[6] }}">{{ item[7] }}</a></h5>
+        {% if item[7] == session['username'] or session['user_id'] == admin %}
             <a href="/delete_news/{{item[0]}}">Delete news</a>
         {% endif %}
-        {% if item[6] == session['username'] %}
+        {% if item[7] == session['username'] %}
             <a href="/edit_news/{{item[0]}}">Edit news</a>
         {% endif %}
     </div>
