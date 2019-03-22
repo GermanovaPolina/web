@@ -21,8 +21,10 @@
         <div>{{ item[4] }}</div>
         <div>{{ item[5] }}</div>
         <h5><a href="/profile/{{ item[6] }}">{{ item[6] }}</a></h5>
-        {% if item[6] == session['username'] %}
+        {% if item[6] == session['username'] or session['user_id'] == admin %}
             <a href="/delete_news/{{item[0]}}">Delete news</a>
+        {% endif %}
+        {% if item[6] == session['username'] %}
             <a href="/edit_news/{{item[0]}}">Edit news</a>
         {% endif %}
     </div>

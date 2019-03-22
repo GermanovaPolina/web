@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, make_response, jsonify
+from flask import Flask, render_template, session, redirect, make_response, jsonify, request
 from forms import LoginForm, RegForm, EditForm, CreateForm, EditComForm, AddNewsForm, EditNewsForm
 from models import DB, UserModel, NewsModel, CommunityModel
 from datetime import datetime
@@ -218,6 +218,12 @@ def updating(news_id):
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.route('/communities')
+def coms():
+    communs = sorted([tuply[1] for tuply in community_model.get_all()])
+    return render_template('communities.html', communities=communs)
+
 
 
 if __name__ == '__main__':
